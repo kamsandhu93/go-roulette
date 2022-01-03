@@ -76,6 +76,7 @@ func TestRoulettePostCriticalPathTable(t *testing.T) {
 			router := setupRouter(func() int {
 				return tc.mockWinningNumber
 			})
+			SetUpBindValidation()
 			router.ServeHTTP(w, req)
 
 			assert.Equal(t, http.StatusOK, w.Code, "Expected http status code not equal actual code")
@@ -89,4 +90,31 @@ func TestRoulettePostCriticalPathTable(t *testing.T) {
 			assert.Equal(t, tc.mockWinningNumber, respBody.WinningNumber, "Expected winning number not equal actual winning number")
 		})
 	}
+}
+
+func TestErrorPathInvlaidBetType(t *testing.T) {
+	reqBody, err := json.Marshal(roulette.RequestPayload{
+		UserID:        "1",
+		CorrelationId: "1",
+		Bets: []roulette.Bet{{
+			ID:   "1",
+			Size: 2,
+			Type: "InvalidBetType",
+		}},
+	})
+
+	if err != nil {
+		t.Fatal("[ERROR] Unable to generate the input json for the test", err)
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/v1/roulette", bytes.NewBuffer(reqBody))
+
+	router := setupRouter(func() int {
+		return 1
+	})
+	SetUpBindValidation()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code, "Expected http status code not equal actual code")
 }
