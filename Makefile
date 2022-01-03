@@ -1,21 +1,19 @@
-GO_VERSION ?= 1.17.5
-
 install:
-	go${GO_VERSION} get .
+	go get .
 
 run:
-	go${GO_VERSION} run .
+	go run .
 
 build:
-	go${GO_VERSION} build .
+	go build .
 
 clean:
 	rm -f go-roulette
 
 test:
-	go${GO_VERSION} test .
+	go test .
 
 tidy:
-	go${GO_VERSION} mod tidy
+	go mod tidy
 
 .PHONY: install run build clean test tidy
