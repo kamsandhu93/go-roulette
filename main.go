@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"gitlab.com/kamsandhu93/go-roulette/middleware"
 	"gitlab.com/kamsandhu93/go-roulette/roulette"
 	"os"
 )
@@ -23,6 +24,12 @@ func setupRouter(spinWheelFunc roulette.SpinWheelFunc) *gin.Engine {
 
 func main() {
 	router := setupRouter(roulette.SpinWheel)
+
+	router.Use(gin.Logger())
+	router.Use(middleware.Logger()) //extra logging
+	router.Use(middleware.Auth())
+	// Recovery middleware recovers from any panics and writes a 500 if there was one.
+	router.Use(gin.Recovery())
 
 	port := getEnv("PORT", "8080")
 	host := getEnv("HOST", "localhost")
