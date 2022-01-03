@@ -132,6 +132,8 @@ Bet types represent the location of a chip placed on a roulette board. The follo
 ## Roadmap
 
 - Finish the square bet implementation.
+- Implement feature toggling of bet types - this could be achieved by having a function that builds up the bettypes map, 
+inserting keys based on the value of envars/feature toggles.
 - Implement remaining bet types documented in the table above. 
 - Add supplemental unit tests to increase coverage, and also more granular unit tests that test at the function level.
 - Create a Dockerfile for a container that runs the Gin server. The dockerfile should use a builder layer to build the binary.
@@ -147,4 +149,5 @@ The load balancer should terminate the SSL connection and forward to the docker 
   - Promote to docker repository (such as ECR), with an appropriate tag such as the current git sha.
   - Deployment of newly built image to hosting environment.
   - Run environment based integration/end-to-end tests.
+- Implement logger with log level support. Log level passed in as config via envars.
 
