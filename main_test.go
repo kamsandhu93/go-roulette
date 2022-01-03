@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"gitlab.com/kamsandhu93/go-roulette/roulette"
 	"net/http"
@@ -21,88 +22,57 @@ func TestHealthRoute(t *testing.T) {
 	assert.Equal(t, "ok", w.Body.String())
 }
 
-// Critical Path tests
-func TestRouletteStraightWin(t *testing.T) {
-	inputBetType := "17"
-	inputBetSize := 2
-	mockWinningNumber := 17
-	expectedWinnings := 72
-
-	router := setupRouter(func() int {
-		return mockWinningNumber
-	})
-
-	bet := roulette.Bet{
-		ID:   "1",
-		Size: inputBetSize,
-		Type: inputBetType,
+func TestRoulettePostCriticalPathTable(t *testing.T) {
+	tests := map[string]struct {
+		inputBets         []roulette.Bet
+		mockWinningNumber int
+		expectedWinnings  int
+	}{
+		"simple_single_straight_win": {mockWinningNumber: 0, expectedWinnings: 108, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "0"}}},
+		"simple_single_straight_loss": {mockWinningNumber: 1, expectedWinnings: 0, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "0"}}},
+		"simple_multiple_straight_win": {mockWinningNumber: 0, expectedWinnings: 108, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "0"},
+			{ID: "0", Size: 10, Type: "5"},
+			{ID: "0", Size: 4, Type: "30"}}},
+		"simple_multiple_straight_loss": {mockWinningNumber: 1, expectedWinnings: 3, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "0"},
+			{ID: "0", Size: 10, Type: "5"},
+			{ID: "0", Size: 4, Type: "30"}}},
 	}
 
-	reqBody, err := json.Marshal(roulette.RequestPayload{
-		UserID:        "1",
-		CorrelationId: "1",
-		Bets:          []roulette.Bet{bet},
-	})
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			fmt.Println("--- Test case:", name, "---")
 
-	if err != nil {
-		t.Fatal("[ERROR] Unable to generate the input json for the test", err)
+			reqBody, err := json.Marshal(roulette.RequestPayload{
+				UserID:        "1",
+				CorrelationId: "1",
+				Bets:          tc.inputBets,
+			})
+
+			if err != nil {
+				t.Fatal("[ERROR] Unable to generate the input json for the test", err)
+			}
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("POST", "/v1/roulette", bytes.NewBuffer(reqBody))
+
+			router := setupRouter(func() int {
+				return tc.mockWinningNumber
+			})
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, http.StatusOK, w.Code, "Expected http status code not equal actual code")
+
+			var respBody roulette.ResponsePayload
+			if err := json.Unmarshal(w.Body.Bytes(), &respBody); err != nil {
+				t.Fatal("[ERROR] Unable to deserialize JSON response", err)
+			}
+
+			assert.Equal(t, tc.expectedWinnings, respBody.Winnings, "Expected winnings not equal actual winnings")
+			assert.Equal(t, tc.mockWinningNumber, respBody.WinningNumber, "Expected winning number not equal actual winning number")
+		})
 	}
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/v1/roulette", bytes.NewBuffer(reqBody))
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, 200, w.Code)
-
-	var respBody roulette.ResponsePayload
-	if err := json.Unmarshal(w.Body.Bytes(), &respBody); err != nil {
-		t.Fatal("[ERROR] Unable to deserialize JSON response", err)
-	}
-
-	assert.Equal(t, expectedWinnings, respBody.Winnings)
-	assert.Equal(t, mockWinningNumber, respBody.WinningNumber)
-
-}
-
-// Critical Path tests
-func TestRouletteStraightLoss(t *testing.T) {
-	inputBetType := "17"
-	inputBetSize := 2
-	mockWinningNumber := 13
-	expectedWinnings := 0
-
-	router := setupRouter(func() int {
-		return mockWinningNumber
-	})
-
-	bet := roulette.Bet{
-		ID:   "1",
-		Size: inputBetSize,
-		Type: inputBetType,
-	}
-
-	reqBody, err := json.Marshal(roulette.RequestPayload{
-		UserID:        "1",
-		CorrelationId: "1",
-		Bets:          []roulette.Bet{bet},
-	})
-
-	if err != nil {
-		t.Fatal("[ERROR] Unable to generate the input json for the test", err)
-	}
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/v1/roulette", bytes.NewBuffer(reqBody))
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, 200, w.Code)
-
-	var respBody roulette.ResponsePayload
-	if err := json.Unmarshal(w.Body.Bytes(), &respBody); err != nil {
-		t.Fatal("[ERROR] Unable to deserialize JSON response", err)
-	}
-
-	assert.Equal(t, expectedWinnings, respBody.Winnings)
-	assert.Equal(t, mockWinningNumber, respBody.WinningNumber)
-
 }
