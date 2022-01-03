@@ -6,7 +6,7 @@
   - [Run the webserver on localhost:8080](#run-the-webserver-on-localhost-8080)
   - [Run tests](#run-tests)
 * [API](#api)
-  + [Healthcheck](#healthcheck)
+  + [Healthcheck](#health-check)
   + [Roulette](#roulette)
 * [Roadmap](#roadmap)
 
@@ -45,18 +45,18 @@ make tests
 
 The server exposes a RESTful API that accepts JSON http requests. The following endpoints are supported:
 
-### Healthcheck
+### Health-check
 A simple health check endpoint.
 
 `/heatlh`
 
-####Methods:
+#### Methods:
 - GET
 
-####Request fields: 
+#### Request fields: 
 None
 
-####Response
+#### Response
 ```json
 "OK"
 ```
@@ -66,18 +66,18 @@ the caller as a JSON payload.
 
 `/v1/roulette`
 
-####Methods:
+#### Methods:
 - POST
 
-####Request fields:
-- (string) correlation_id - Unique identifier to correlate traffic across client and server.
-- (string) user_id - Unique identifier for the user.
-- (array) bets - Array of bet objects with the following schema:
-    - (string) id - Unique identifier for the bet
-    - (string) BetType - Type of bet placed, see bellow for valid values.
-    - (int) Size - Value of the bet placed - a decimal number. 
+#### Request fields:
+- (*string*) correlation_id - Unique identifier to correlate traffic across client and server.
+- (*string*) user_id - Unique identifier for the user.
+- (*array*) bets - Array of bet objects with the following schema:
+    - (*string*) id - Unique identifier for the bet.
+    - (*string*) BetType - Type of bet placed, see [bellow](#supported-bet-types) for valid values.
+    - (*int*) Size - Value of the bet placed - a decimal number. 
  
-####Example Request:
+#### Example Request:
 ```json
 {
     "user_id" : "1",
@@ -102,12 +102,12 @@ the caller as a JSON payload.
 }
 ```
 
-####Response fields:
-- (string) correlation_id - Unique identifier to correlate traffic across client and server.
-- (int) winning_number - Winning number from the round of roulette.
-- (int) winnings - Total winnings derived from submitted bets.
+#### Response fields:
+- (*string*) correlation_id - Unique identifier to correlate traffic across client and server.
+- (*int*) winning_number - Winning number from the round of roulette.
+- (*int*) winnings - Total winnings derived from submitted bets.
 
-####Example response:
+#### Example response:
 ```json
 {
     "correlation_id" : "1",
@@ -116,7 +116,7 @@ the caller as a JSON payload.
 }
 ```
 
-####Supported bet types:
+#### Supported bet types:
 
 Bet types represent the location of a chip placed on a roulette board. The following table details all valid bet types.
 
