@@ -52,6 +52,8 @@ func TestRoulettePostCriticalPathTable(t *testing.T) {
 			{ID: "0", Size: 3, Type: "high"}}},
 		"single_low_loss": {mockWinningNumber: 1, expectedWinnings: 0, inputBets: []roulette.Bet{
 			{ID: "0", Size: 3, Type: "high"}}},
+		"single_square_win": {mockWinningNumber: 1, expectedWinnings: 27, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "1-2-4-5"}}},
 	}
 
 	for name, tc := range tests {
