@@ -29,12 +29,9 @@ func PostHandler(c *gin.Context, spinWheelFunc SpinWheelFunc) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	winningNumber, winnings := postController(requestPayload.Bets, spinWheelFunc)
 
-	//TODO stubs for now
-	winningNumber := spinWheelFunc()
-	winnings := 100
-
-	// Indented JSON used for debugging only - production app should call c.JSON
+	// Indented JSON used for debugging only - a production app would call c.JSON
 	c.IndentedJSON(http.StatusOK, ResponsePayload{
 		CorrelationId: requestPayload.CorrelationId,
 		WinningNumber: winningNumber,
@@ -42,11 +39,4 @@ func PostHandler(c *gin.Context, spinWheelFunc SpinWheelFunc) {
 	})
 
 	return
-}
-
-type SpinWheelFunc func() int
-
-func SpinWheel() int {
-	return 9
-	//TODO hardcoded for now, will eventually return a random number between 0 and 36
 }
