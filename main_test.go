@@ -28,18 +28,30 @@ func TestRoulettePostCriticalPathTable(t *testing.T) {
 		mockWinningNumber int
 		expectedWinnings  int
 	}{
-		"simple_single_straight_win": {mockWinningNumber: 0, expectedWinnings: 108, inputBets: []roulette.Bet{
+		"single_straight_win": {mockWinningNumber: 0, expectedWinnings: 108, inputBets: []roulette.Bet{
 			{ID: "0", Size: 3, Type: "0"}}},
-		"simple_single_straight_loss": {mockWinningNumber: 1, expectedWinnings: 0, inputBets: []roulette.Bet{
+		"single_straight_loss": {mockWinningNumber: 1, expectedWinnings: 0, inputBets: []roulette.Bet{
 			{ID: "0", Size: 3, Type: "0"}}},
-		"simple_multiple_straight_win": {mockWinningNumber: 0, expectedWinnings: 108, inputBets: []roulette.Bet{
+		"multiple_straight_win": {mockWinningNumber: 0, expectedWinnings: 108, inputBets: []roulette.Bet{
 			{ID: "0", Size: 3, Type: "0"},
 			{ID: "0", Size: 10, Type: "5"},
 			{ID: "0", Size: 4, Type: "30"}}},
-		"simple_multiple_straight_loss": {mockWinningNumber: 1, expectedWinnings: 3, inputBets: []roulette.Bet{
+		"multiple_straight_loss": {mockWinningNumber: 1, expectedWinnings: 0, inputBets: []roulette.Bet{
 			{ID: "0", Size: 3, Type: "0"},
 			{ID: "0", Size: 10, Type: "5"},
 			{ID: "0", Size: 4, Type: "30"}}},
+		"single_red_win": {mockWinningNumber: 1, expectedWinnings: 6, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "red"}}},
+		"single_red_loss": {mockWinningNumber: 2, expectedWinnings: 0, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "red"}}},
+		"single_odd_win": {mockWinningNumber: 19, expectedWinnings: 6, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "odd"}}},
+		"single_odd_loss": {mockWinningNumber: 16, expectedWinnings: 0, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "odd"}}},
+		"single_high_win": {mockWinningNumber: 36, expectedWinnings: 6, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "high"}}},
+		"single_low_loss": {mockWinningNumber: 1, expectedWinnings: 0, inputBets: []roulette.Bet{
+			{ID: "0", Size: 3, Type: "high"}}},
 	}
 
 	for name, tc := range tests {
