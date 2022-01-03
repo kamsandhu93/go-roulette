@@ -2,6 +2,7 @@ package roulette
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type RequestPayload struct {
@@ -23,6 +24,27 @@ type ResponsePayload struct {
 }
 
 func PostHandler(c *gin.Context) {
-	//TODO
+	var requestPayload RequestPayload
+	if err := c.BindJSON(&requestPayload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	//TODO stubs for now
+	winningNumber := spinWheel()
+	winnings := 100
+
+	// Indented JSON used for debugging only - production app should call c.JSON
+	c.IndentedJSON(http.StatusOK, ResponsePayload{
+		CorrelationId: requestPayload.CorrelationId,
+		WinningNumber: winningNumber,
+		Winnings:      winnings,
+	})
+
 	return
+}
+
+func spinWheel() int {
+	return 9
+	//TODO hardcoded for now, will eventually return a random number between 0 and 36
 }

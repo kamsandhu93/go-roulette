@@ -28,8 +28,10 @@ func TestRoulleteStraight(t *testing.T) {
 	bet := roulette.Bet{
 		ID:   "1",
 		Size: 1,
-		Type: "straight",
+		Type: "17",
 	}
+	mockWinningNumber := 9
+	expectedWinnings := 100
 
 	reqBody, err := json.Marshal(roulette.RequestPayload{
 		UserID:        "1",
@@ -38,13 +40,21 @@ func TestRoulleteStraight(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Fatalf("[ERROR] Unable to generate the input json for the test")
+		t.Fatal("[ERROR] Unable to generate the input json for the test", err)
 	}
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/todo", bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", "/v1/roulette", bytes.NewBuffer(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
+
+	var respBody roulette.ResponsePayload
+	if err := json.Unmarshal(w.Body.Bytes(), &respBody); err != nil {
+		t.Fatal("[ERROR] Unable to deserialize JSON response", err)
+	}
+
+	assert.Equal(t, expectedWinnings, respBody.Winnings)
+	assert.Equal(t, mockWinningNumber, respBody.WinningNumber)
 
 }

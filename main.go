@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"gitlab.com/kamsandhu93/go-roulette/roulette"
 	"os"
 )
 
@@ -11,6 +12,7 @@ func setupRouter() *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		c.String(200, "ok")
 	})
+	router.POST("/v1/roulette", roulette.PostHandler)
 
 	return router
 }
