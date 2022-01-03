@@ -23,7 +23,7 @@ type ResponsePayload struct {
 	Winnings      int    `json:"winnings"`
 }
 
-func PostHandler(c *gin.Context) {
+func PostHandler(c *gin.Context, spinWheelFunc SpinWheelFunc) {
 	var requestPayload RequestPayload
 	if err := c.BindJSON(&requestPayload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -31,7 +31,7 @@ func PostHandler(c *gin.Context) {
 	}
 
 	//TODO stubs for now
-	winningNumber := spinWheel()
+	winningNumber := spinWheelFunc()
 	winnings := 100
 
 	// Indented JSON used for debugging only - production app should call c.JSON
@@ -44,7 +44,9 @@ func PostHandler(c *gin.Context) {
 	return
 }
 
-func spinWheel() int {
+type SpinWheelFunc func() int
+
+func SpinWheel() int {
 	return 9
 	//TODO hardcoded for now, will eventually return a random number between 0 and 36
 }

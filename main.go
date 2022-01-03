@@ -6,19 +6,23 @@ import (
 	"os"
 )
 
-func setupRouter() *gin.Engine {
+// Dependency injection of the spin wheel function used by the roulette route,
+// allows tests to mock the winning number
+func setupRouter(spinWheelFunc roulette.SpinWheelFunc) *gin.Engine {
 	router := gin.New() // without logger and recovery middleware
 
 	router.GET("/health", func(c *gin.Context) {
 		c.String(200, "ok")
 	})
-	router.POST("/v1/roulette", roulette.PostHandler)
+	router.POST("/v1/roulette", func(context *gin.Context) {
+		roulette.PostHandler(context, spinWheelFunc)
 
+	})
 	return router
 }
 
 func main() {
-	router := setupRouter()
+	router := setupRouter(roulette.SpinWheel)
 
 	port := getEnv("PORT", "8080")
 	host := getEnv("HOST", "localhost")

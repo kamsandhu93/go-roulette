@@ -11,7 +11,7 @@ import (
 )
 
 func TestHealthRoute(t *testing.T) {
-	router := setupRouter()
+	router := setupRouter(roulette.SpinWheel)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/health", nil)
@@ -22,16 +22,19 @@ func TestHealthRoute(t *testing.T) {
 }
 
 // Critical Path tests
-func TestRoulleteStraight(t *testing.T) {
-	router := setupRouter()
+func TestRouletteStraight(t *testing.T) {
+	mockWinningNumber := 32
+	expectedWinnings := 100
+
+	router := setupRouter(func() int {
+		return mockWinningNumber
+	})
 
 	bet := roulette.Bet{
 		ID:   "1",
 		Size: 1,
 		Type: "17",
 	}
-	mockWinningNumber := 9
-	expectedWinnings := 100
 
 	reqBody, err := json.Marshal(roulette.RequestPayload{
 		UserID:        "1",
